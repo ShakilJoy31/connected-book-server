@@ -6,7 +6,7 @@ require('dotenv').config();
 app.use(cors()); 
 app.use(express.json()); 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const { query } = require('express');
 const uri = `mongodb+srv://${process.env.USER}:${process.env.PASSWORD}@cluster0.vvmdl.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
@@ -38,6 +38,16 @@ async function run(){
             const information = req.body; 
             const result = await postsCollection.insertOne(information); 
             res.send(result); 
+        })
+
+        // Getting users post from the database. 
+        app.get('/getPost', async (req, res) => {
+            const query = {}; 
+            const result = postsCollection.find(query); 
+            const posts = await result.toArray(); 
+            const sendablePost = posts.reverse(); 
+            console.log(sendablePost); 
+            res.send(sendablePost); 
         })
     }
     finally{
